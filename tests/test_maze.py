@@ -53,3 +53,17 @@ def test_dfs_finds_path_from_start_to_end():
         (2, 1),
         (2, 2),
     ]
+
+def test_dfs_returns_empty_list_when_no_path_exists():
+    maze = [
+        [0, 1, 0],
+        [1, 1, 0],
+        [0, 0, 0],
+    ]
+
+    start = (0, 0)
+    end = (2, 2)
+
+    path = solve_maze_dfs(maze, start, end)
+
+    assert path == []
