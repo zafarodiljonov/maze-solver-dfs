@@ -6,3 +6,42 @@ def is_valid_move(maze, row, col):
         return False
 
     return maze[row][col] == 0
+
+
+def solve_maze_dfs(maze, start, end):
+    visited = set()
+    path = []
+
+    def dfs(position):
+        row, col = position
+
+        if not is_valid_move(maze, row, col):
+            return False
+
+        if position in visited:
+            return False
+
+        visited.add(position)
+        path.append(position)
+
+        if position == end:
+            return True
+
+        moves = [
+            (row + 1, col),
+            (row, col + 1),
+            (row - 1, col),
+            (row, col - 1),
+        ]
+
+        for next_position in moves:
+            if dfs(next_position):
+                return True
+
+        path.pop()
+        return False
+
+    if dfs(start):
+        return path
+
+    return []
