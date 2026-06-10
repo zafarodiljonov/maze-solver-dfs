@@ -1,44 +1,26 @@
-def solve_maze_dfs(maze, start, end, return_visited=False):
-    visited = []
-    visited_set = set()
-    path = []
+from src.maze import solve_maze_dfs
 
-    def dfs(position):
-        row, col = position
+maze = [
+    [0, 1, 0, 0],
+    [0, 1, 0, 1],
+    [0, 0, 0, 1],
+    [1, 1, 0, 0],
+]
 
-        if not is_valid_move(maze, row, col):
-            return False
+start = (0, 0)
+end = (3, 3)
 
-        if position in visited_set:
-            return False
+path, visited = solve_maze_dfs(
+    maze,
+    start,
+    end,
+    return_visited=True
+)
 
-        visited_set.add(position)
-        visited.append(position)
-        path.append(position)
+print("Visited Cells:")
+for cell in visited:
+    print(cell)
 
-        if position == end:
-            return True
-
-        moves = [
-            (row + 1, col),
-            (row, col + 1),
-            (row - 1, col),
-            (row, col - 1),
-        ]
-
-        for next_position in moves:
-            if dfs(next_position):
-                return True
-
-        path.pop()
-        return False
-
-    if dfs(start):
-        if return_visited:
-            return path, visited
-        return path
-
-    if return_visited:
-        return [], visited
-    return []
-
+print("\nFinal Path:")
+for cell in path:
+    print(cell)
