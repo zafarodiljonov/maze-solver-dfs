@@ -106,3 +106,31 @@ def test_invalid_end_returns_empty_path():
     path = solve_maze_dfs(maze, start, end)
 
     assert path == []
+
+def test_dfs_returns_visited_cells():
+    maze = [
+        [0, 1, 0],
+        [0, 1, 0],
+        [0, 0, 0],
+    ]
+
+    start = (0, 0)
+    end = (2, 2)
+
+    path, visited = solve_maze_dfs(maze, start, end, return_visited=True)
+
+    assert path == [
+        (0, 0),
+        (1, 0),
+        (2, 0),
+        (2, 1),
+        (2, 2),
+    ]
+
+    assert visited == [
+        (0, 0),
+        (1, 0),
+        (2, 0),
+        (2, 1),
+        (2, 2),
+    ]
