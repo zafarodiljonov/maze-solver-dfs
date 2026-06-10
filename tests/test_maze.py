@@ -68,15 +68,15 @@ def test_dfs_returns_empty_list_when_no_path_exists():
 
     assert path == []
 
-def test_invalid_end_returns_empty_path():
+def test_start_equals_end():
     maze = [
         [0, 0],
-        [0, 1],
+        [0, 0],
     ]
 
     start = (0, 0)
-    end = (1, 1)
+    end = (0, 0)
 
     path = solve_maze_dfs(maze, start, end)
 
-    assert path == []
+    assert path == [(0, 0)]
