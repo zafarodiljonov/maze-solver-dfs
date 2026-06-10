@@ -8,8 +8,9 @@ def is_valid_move(maze, row, col):
     return maze[row][col] == 0
 
 
-def solve_maze_dfs(maze, start, end):
-    visited = set()
+def solve_maze_dfs(maze, start, end, return_visited=False):
+    visited = []
+    visited_set = set()
     path = []
 
     def dfs(position):
@@ -18,10 +19,11 @@ def solve_maze_dfs(maze, start, end):
         if not is_valid_move(maze, row, col):
             return False
 
-        if position in visited:
+        if position in visited_set:
             return False
 
-        visited.add(position)
+        visited_set.add(position)
+        visited.append(position)
         path.append(position)
 
         if position == end:
@@ -42,6 +44,10 @@ def solve_maze_dfs(maze, start, end):
         return False
 
     if dfs(start):
+        if return_visited:
+            return path, visited
         return path
 
+    if return_visited:
+        return [], visited
     return []
