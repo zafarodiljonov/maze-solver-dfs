@@ -80,3 +80,16 @@ def test_start_equals_end():
     path = solve_maze_dfs(maze, start, end)
 
     assert path == [(0, 0)]
+
+def test_invalid_start_returns_empty_path():
+    maze = [
+        [1, 0],
+        [0, 0],
+    ]
+
+    start = (0, 0)
+    end = (1, 1)
+
+    path = solve_maze_dfs(maze, start, end)
+
+    assert path == []
