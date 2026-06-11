@@ -117,7 +117,6 @@ The project includes tests for:
 
 Depth-First Search (DFS) explores one path as deeply as possible before backtracking and trying alternative paths.
 
-Time Complexity: O(V + E)
 
 ## Internship Project
 
