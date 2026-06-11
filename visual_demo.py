@@ -1,88 +1,76 @@
-import turtle
+import os
+import random
 import time
 
-maze = [
-    [0,0,0,0,1,0,0,0,0,0,0,0,0,0,0],
-    [1,0,1,1,1,1,1,1,1,1,1,1,1,1,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0,0,1,0],
-    [0,1,0,1,1,1,1,0,1,1,1,1,0,1,0],
-    [0,1,0,0,0,0,0,0,0,1,0,1,0,0,0],
-    [0,0,0,1,1,1,1,1,1,1,0,0,0,1,1],
-    [0,1,0,0,0,1,0,0,0,1,1,1,0,1,0],
-    [0,1,0,1,0,1,1,1,0,1,0,1,0,1,0],
-    [0,1,0,1,0,1,0,0,0,1,0,1,0,1,0],
-    [0,0,0,0,0,0,1,1,1,1,0,1,0,1,0],
-    [0,1,0,1,0,0,0,0,0,0,0,1,0,1,0],
-    [0,0,0,0,1,1,1,1,1,1,1,1,0,0,0],
-    [0,0,0,0,0,0,1,0,0,0,0,0,0,1,0],
-    [0,0,0,1,1,1,1,1,1,1,1,1,1,1,0],
-    [0,0,0,0,0,0,0,1,0,0,0,0,0,0,0],
-]
-
-start = (0, 0)
-end = (14, 14)
-cell_size = 28
-
-delay = 0.08
-
-screen = turtle.Screen()
-screen.title("Live DFS Maze Solver")
-screen.setup(600, 600)
-screen.tracer(0)
-
-drawer = turtle.Turtle()
-drawer.hideturtle()
-drawer.speed(0)
-
-marker = turtle.Turtle()
-marker.hideturtle()
-marker.penup()
-marker.speed(0)
+from src.maze import solve_maze_dfs
 
 
-def cell_to_screen(row, col):
-    x = col * cell_size - 190
-    y = 190 - row * cell_size
-    return x, y
+def clear_screen():
+    os.system("cls" if os.name == "nt" else "clear")
 
 
-def draw_square(row, col, color):
-    x, y = cell_to_screen(row, col)
-    drawer.penup()
-    drawer.goto(x, y)
-    drawer.pendown()
-    drawer.fillcolor(color)
-    drawer.begin_fill()
+def generate_maze(width, height):
+    if width < 5:
+        width = 5
+    if height < 5:
+        height = 5
 
-    for _ in range(4):
-        drawer.forward(cell_size)
-        drawer.right(90)
+    maze = [[1 for _ in range(width)] for _ in range(height)]
 
-    drawer.end_fill()
+    def carve(row, col):
+        maze[row][col] = 0
+
+        directions = [(0, 2), (2, 0), (0, -2), (-2, 0)]
+        random.shuffle(directions)
+
+        for dr, dc in directions:
+            new_row = row + dr
+            new_col = col + dc
+
+            if 1 <= new_row < height - 1 and 1 <= new_col < width - 1:
+                if maze[new_row][new_col] == 1:
+                    maze[row + dr // 2][col + dc // 2] = 0
+                    carve(new_row, new_col)
+
+    carve(1, 1)
+
+    maze[1][1] = 0
+    maze[height - 2][width - 2] = 0
+
+    return maze
 
 
-def draw_dot(row, col, color):
-    x, y = cell_to_screen(row, col)
-    marker.goto(x + cell_size / 2, y - cell_size / 2)
-    marker.dot(14, color)
-    screen.update()
-    time.sleep(delay)
+def print_maze(maze, start, end, visited=None, path=None, current=None):
+    visited = visited or set()
+    path = path or set()
 
+    clear_screen()
 
-def draw_maze():
     for row in range(len(maze)):
+        line = ""
+
         for col in range(len(maze[0])):
-            if maze[row][col] == 1:
-                draw_square(row, col, "black")
+            position = (row, col)
+
+            if position == start:
+                line += "S "
+            elif position == end:
+                line += "E "
+            elif position == current:
+                line += "@ "
+            elif position in path:
+                line += "* "
+            elif position in visited:
+                line += ". "
+            elif maze[row][col] == 1:
+                line += "█ "
             else:
-                draw_square(row, col, "white")
+                line += "  "
 
-    draw_square(start[0], start[1], "green")
-    draw_square(end[0], end[1], "blue")
-    screen.update()
+        print(line)
 
 
-def is_valid(row, col, visited):
+def is_valid_move(maze, row, col, visited):
     if row < 0 or col < 0:
         return False
 
@@ -98,42 +86,68 @@ def is_valid(row, col, visited):
     return True
 
 
-def live_dfs(row, col, visited, path):
-    if not is_valid(row, col, visited):
-        return False
+def dfs_visual(maze, start, end):
+    visited = set()
+    path = []
 
-    visited.add((row, col))
-    path.append((row, col))
+    def dfs(position):
+        row, col = position
 
-    draw_dot(row, col, "red")
+        if not is_valid_move(maze, row, col, visited):
+            return False
 
-    if (row, col) == end:
-        return True
+        visited.add(position)
+        path.append(position)
 
-    moves = [
-        (row + 1, col),
-        (row, col + 1),
-        (row - 1, col),
-        (row, col - 1),
-    ]
+        print_maze(maze, start, end, visited, set(path), position)
+        time.sleep(0.08)
 
-    for next_row, next_col in moves:
-        if live_dfs(next_row, next_col, visited, path):
+        if position == end:
             return True
 
-    draw_dot(row, col, "gray")
-    path.pop()
-    return False
+        moves = [
+            (row + 1, col),
+            (row, col + 1),
+            (row - 1, col),
+            (row, col - 1),
+        ]
+
+        for next_position in moves:
+            if dfs(next_position):
+                return True
+
+        path.pop()
+
+        print_maze(maze, start, end, visited, set(path), position)
+        time.sleep(0.08)
+
+        return False
+
+    dfs(start)
+    return path, visited
 
 
-draw_maze()
+def main():
+    width = int(input("Enter maze width: "))
+    height = int(input("Enter maze height: "))
 
-visited_cells = set()
-final_path = []
+    if width % 2 == 0:
+        width += 1
+    if height % 2 == 0:
+        height += 1
 
-live_dfs(start[0], start[1], visited_cells, final_path)
+    maze = generate_maze(width, height)
 
-for row, col in final_path:
-    draw_dot(row, col, "lime")
+    start = (1, 1)
+    end = (height - 2, width - 2)
 
-screen.mainloop()
+    path, visited = dfs_visual(maze, start, end)
+
+    print_maze(maze, start, end, set(visited), set(path))
+    print("\nDFS complete.")
+    print(f"Visited cells: {len(visited)}")
+    print(f"Path length: {len(path)}")
+
+
+if __name__ == "__main__":
+    main()
