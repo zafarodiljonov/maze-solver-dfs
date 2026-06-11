@@ -37,6 +37,16 @@ def generate_maze(width, height):
     maze[1][1] = 0
     maze[height - 2][width - 2] = 0
 
+    # Add extra openings to create more complex routes and false paths
+    extra_paths = (width * height) // 6
+
+    for _ in range(extra_paths):
+        row = random.randrange(1, height - 1)
+        col = random.randrange(1, width - 1)
+
+        if maze[row][col] == 1:
+            maze[row][col] = 0
+
     return maze
 
 
