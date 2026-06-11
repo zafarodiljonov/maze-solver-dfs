@@ -5,8 +5,8 @@ A Python project that solves mazes using the Depth-First Search (DFS) algorithm.
 ## Team Members
 
 * Team Leader: Zafar Odijonov
-* Team Member 1
-* Team Member 2
+* Team Member Javokhir
+* Team Member Azizbek
 
 ## Project Description
 
